@@ -7,7 +7,7 @@
 #define OS_MEMORY_REPLACEMENTALGORITHM_H
 
 
-class ReplacementAlgorithm {
+class ReplacementStrategy {
 
 };
 

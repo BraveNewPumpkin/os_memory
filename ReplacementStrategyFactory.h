@@ -8,14 +8,14 @@
 #include <map>
 #include <vector>
 #include <string>
-#include "ReplacementAlgorithm.h"
+#include "ReplacementStrategy.h"
 
-class ReplacementAlgorithmFactory {
+class ReplacementStrategyFactory {
 private:
   std::map<const std::string, const std::string> name_description_map;
 
 public:
-  ReplacementAlgorithmFactory():name_description_map{
+  ReplacementStrategyFactory():name_description_map{
      {"fifo", "first-in-first-out"},
      {"lru", "least recently used"},
      {"lfu", "least frequently used"},
@@ -25,18 +25,18 @@ public:
 
   }
 
-  ReplacementAlgorithm getAlgorithmObject(const std::string& name) const{
-    ReplacementAlgorithm replacement_algorithm;
+  ReplacementStrategy getAlgorithmObject(const std::string& name) const{
+    ReplacementStrategy replacement_algorithm;
     if(name == "fifo"){
-      //TODO construct and return fifo ReplacementAlgorithm object
+      //TODO construct and return fifo ReplacementStrategy object
     } else if(name == "lru"){
-      //TODO construct and return lru ReplacementAlgorithm object
+      //TODO construct and return lru ReplacementStrategy object
     } else if(name == "lfu"){
-      //TODO construct and return lfu ReplacementAlgorithm object
+      //TODO construct and return lfu ReplacementStrategy object
     } else if(name == "opt"){
-      //TODO construct and return opt ReplacementAlgorithm object
+      //TODO construct and return opt ReplacementStrategy object
     } else if(name == "ws"){
-      //TODO construct and return ws ReplacementAlgorithm object
+      //TODO construct and return ws ReplacementStrategy object
     }else{
       throw std::runtime_error("invalid replacement algorithm name: \"" + name + '"');
     }
