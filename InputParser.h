@@ -8,13 +8,15 @@
 
 #include <iosfwd>
 #include <istream>
+#include <string>
+
+#include "InputData.h"
+#include "ReplacementStrategy.h"
 
 class InputParser {
 private:
 public:
-InputParser(std::istream input){
-
-}
+  std::unique_ptr<InputData> parse(std::istream& input, const ReplacementStrategy& replacement_strategy);
 
 };
 

@@ -25,22 +25,27 @@ public:
 
   }
 
-  ReplacementStrategy getAlgorithmObject(const std::string& name) const{
-    ReplacementStrategy replacement_algorithm;
+  std::unique_ptr<ReplacementStrategy> getAlgorithmObject(const std::string& name) const{
+    std::unique_ptr<ReplacementStrategy> replacement_strategy;
     if(name == "fifo"){
+      replacement_strategy.reset(new ReplacementStrategy(name));
       //TODO construct and return fifo ReplacementStrategy object
     } else if(name == "lru"){
+      replacement_strategy.reset(new ReplacementStrategy(name));
       //TODO construct and return lru ReplacementStrategy object
     } else if(name == "lfu"){
+      replacement_strategy.reset(new ReplacementStrategy(name));
       //TODO construct and return lfu ReplacementStrategy object
     } else if(name == "opt"){
+      replacement_strategy.reset(new ReplacementStrategy(name));
       //TODO construct and return opt ReplacementStrategy object
     } else if(name == "ws"){
+      replacement_strategy.reset(new ReplacementStrategy(name));
       //TODO construct and return ws ReplacementStrategy object
     }else{
       throw std::runtime_error("invalid replacement algorithm name: \"" + name + '"');
     }
-    return replacement_algorithm;
+    return replacement_strategy;
   }
 
   std::vector<std::pair<const std::string, const std::string>> getNameDescriptions() const;

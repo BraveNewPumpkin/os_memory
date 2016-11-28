@@ -37,7 +37,7 @@ int main(const int argc, const char* argv[]){
     }
 
     //check required arguments and set replacement algorithm
-    ReplacementStrategy replacement_strategy;
+    std::unique_ptr<ReplacementStrategy> replacement_strategy;
     try {
       if (!program_options_variables.count("algorithm") || !program_options_variables.count("input")) {
         throw std::runtime_error("must define algorithm and input arguments");
@@ -50,11 +50,12 @@ int main(const int argc, const char* argv[]){
     }
 
     //open input file
+    std::string input_filepath;
     std::ifstream input_stream;
     try {
-      std::string input_filepath = program_options_variables["input"].as<std::string>();
+      input_filepath = program_options_variables["input"].as<std::string>();
       //attempt to open input file
-      input_stream(input_filepath);
+      input_stream.open(input_filepath);
       if (!input_stream.is_open()) {
         throw std::runtime_error(std::string(strerror(errno)));
       }
@@ -64,9 +65,9 @@ int main(const int argc, const char* argv[]){
     }
 
     //parse file
-    InputParser input_parser(input_stream);
-    input_parser.parse();
-    input_parser.construct
+    InputParser input_parser;
+    std::unique_ptr<InputData> input_data = input_parser.parse(input_stream, *replacement_strategy); //TODO make sure can pass unique_ptr
+
     //create data structures
   }catch (const std::exception& e){
     std::cerr << "unhandled std::exception caught in main: " << e.what() << std::endl;
