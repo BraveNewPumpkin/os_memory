@@ -9,6 +9,7 @@
 #include <iosfwd>
 #include <istream>
 #include <string>
+#include <memory>
 
 #include "InputData.h"
 #include "ReplacementStrategy.h"
