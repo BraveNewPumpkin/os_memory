@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <memory>
 #include "ReplacementStrategy.h"
 
 class ReplacementStrategyFactory {
