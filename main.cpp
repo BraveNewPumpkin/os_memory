@@ -68,6 +68,7 @@ int main(const int argc, const char* argv[]){
     InputParser input_parser;
     std::unique_ptr<InputData> input_data = input_parser.parse(input_stream, *replacement_strategy); //TODO make sure can pass unique_ptr
 
+
     //create data structures
   }catch (const std::exception& e){
     std::cerr << "unhandled std::exception caught in main: " << e.what() << std::endl;
@@ -78,3 +79,8 @@ int main(const int argc, const char* argv[]){
   }
   return EXIT_SUCCESS;
 }
+/*
+ * create free frames pool
+ * if coming close to min free frames then put a process (random pick) on hold and move it's frames out of memory
+ *
+ */

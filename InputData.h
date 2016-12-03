@@ -32,8 +32,8 @@ struct InputData {
   unsigned int page_size; // page size (in number of bytes)
   unsigned int num_page_frames_per_process; //for FIFO, LRU, LFU and OPT,
   unsigned int window_size; //(delta) for the Working Set algorithm
-  unsigned int min; //?
-  unsigned int max; //?
+  unsigned int min; //min size of pool
+  unsigned int max; //max size of frames pool
   std::vector<ProcessData> address_spaces;
   std::queue<MemoryRequest> memory_requests;
 };
