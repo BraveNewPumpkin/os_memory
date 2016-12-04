@@ -1,67 +1,50 @@
-//
-// Created by Kyle Bolton on 11/26/16.
-//
+import java.io.BufferedReader;
 
-#ifndef OS_MEMORY_INPUTPARSER_H
-#define OS_MEMORY_INPUTPARSER_H
+import static java.lang.Integer.decode;
+import static java.lang.Integer.parseInt;
 
-
-#include <iosfwd>
-#include <istream>
-#include <string>
-#include <memory>
-
-#include "InputData.h"
-#include "ReplacementStrategy.h"
-
-class InputParser {
-private:
-public:
-  std::unique_ptr<InputData> parse(std::istream& input, const ReplacementStrategy& replacement_strategy){
-      std::unique_ptr<InputData> input_data(new InputData());
-      unsigned int num_processes;
-      input >> input_data->num_page_frames;
-      input >> input_data->max_segment_length;
-      input >> input_data->page_size;
-      if(replacement_strategy.getName() != "WS") {
-        input >> input_data->num_page_frames_per_process;
-        if(replacement_strategy.getName() == "OPT") {
-          input >> input_data->window_size;
+/**
+ * Created by kylebolton on 12/3/16.
+ */
+public class InputParser {
+    public InputData parse(BufferedReader input, ReplacementStrategy replacement_strategy) throws java.io.IOException{
+        InputData input_data = new InputData();
+        int num_processes;
+        input_data.num_page_frames = parseInt(input.readLine());
+        input_data.max_segment_length = parseInt(input.readLine());
+        input_data.page_size = parseInt(input.readLine());
+        if(replacement_strategy.getName().equalsIgnoreCase("ws")) {
+            input_data.num_page_frames_per_process = parseInt(input.readLine());
+            if(replacement_strategy.getName().equalsIgnoreCase("OPT")) {
+                input_data.window_size = parseInt(input.readLine());
+            }else{
+                input.readLine(); //throw away line
+            }
         }else{
-          //input.ignore(std::numeric_limits<unsigned int>::max(), '\n');
-          std::string trash;
-          input >> trash;
+            input_data.window_size = parseInt(input.readLine());
+            input.readLine(); //throw away line
         }
-      }else{
-        input >> input_data->window_size;
-        //input.ignore(std::numeric_limits<unsigned int>::max(), input.widen('\n')); //doesn't work for some reason
-        std::string trash;
-        input >> trash;
-      }
-      input >> input_data->min;
-      input >> input_data->max;
-      input >> num_processes;
-      std::string pid;
-      for (int process_num = 0; process_num < num_processes; ++process_num) {
-        unsigned int num_page_frames;
-        input >> pid >> num_page_frames;
-        input_data->address_spaces.emplace_back(pid, num_page_frames);
-      }
-      std::string address;
-      while(input >> pid >> address){
-        unsigned int temp = std::stoul(address, nullptr, 16);
-        if(temp != -1) {
-          unsigned int segment = temp & 0xF; //lower 4 bits
-          unsigned int page = (temp >> 4) & 0xF; //upper 4 bits
-          unsigned int offset; //TODO delete if not used
-          input_data->memory_requests.emplace(pid, segment, page, offset);
+        input_data.min = parseInt(input.readLine());
+        input_data.max = parseInt(input.readLine());
+        num_processes = parseInt(input.readLine());
+        for (int process_num = 0; process_num < num_processes; ++process_num) {
+            String[] tokens = input.readLine().split("\\s");
+            String pid = tokens[0];
+            int num_page_frames = parseInt(tokens[1]);
+            input_data.addAddressSpace(pid, num_page_frames);
         }
-      }
-
-      return input_data;
+        String line;
+        while((line = input.readLine()) != null){
+            String[] tokens = line.split("\\s");
+            String pid = tokens[0];
+            int address = decode(tokens[1]);
+            if(address != -1) {
+                int segment = address & 0xF; //lower 4 bits
+                int page = (address >> 4) & 0xF; //upper 4 bits
+                int offset = 0; //TODO delete if not used
+                input_data.addMemoryRequest(pid, segment, page, offset);
+            }
+        }
+        return input_data;
     }
-
-};
-
-
-#endif //OS_MEMORY_INPUTPARSER_H
+}

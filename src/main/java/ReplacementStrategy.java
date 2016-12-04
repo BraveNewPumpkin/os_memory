@@ -1,20 +1,14 @@
-//
-// Created by Kyle Bolton on 11/26/16.
-// interface for memory replacement algorithm objects
-//
+/**
+ * Created by kylebolton on 12/3/16.
+ */
+public class ReplacementStrategy {
+    private String name;
 
-#ifndef OS_MEMORY_REPLACEMENTALGORITHM_H
-#define OS_MEMORY_REPLACEMENTALGORITHM_H
+    public ReplacementStrategy(String name) {
+        this.name = name;
+    }
 
-#include <string>
-
-class ReplacementStrategy {
-private:
-  std::string name;
-public:
-  ReplacementStrategy(std::string name):name(name){}
-  std::string getName() const;
-};
-
-
-#endif //OS_MEMORY_REPLACEMENTALGORITHM_H
+    public String getName() {
+        return name;
+    }
+}
