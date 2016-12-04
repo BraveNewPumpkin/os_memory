@@ -38,12 +38,15 @@ public class InputParser {
             String[] tokens = line.split("\\s");
             String pid = tokens[0];
             int address = decode(tokens[1]);
+            int segment = 0;
+            int page = 0;
+            int offset = 0;
             if(address != -1) {
-                int segment = address & 0xF; //lower 4 bits
-                int page = (address >> 4) & 0xF; //upper 4 bits
-                int offset = 0; //TODO delete if not used
-                input_data.addMemoryRequest(pid, segment, page, offset);
+                segment = address & 0x3; //lower 2 bits
+                page = (address >> 4) & 0xF; //middle 4 bits
+                offset = (address >> 2) & 0x3; //highest 2 bits
             }
+            input_data.addMemoryRequest(pid, tokens[1], segment, page, offset);
         }
         return input_data;
     }

@@ -9,20 +9,36 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-public class Segment {
-    private PageTable page_table;
-    private int page_index;
+/**
+ * Created by kylebolton on 12/3/16.
+ */
+public class MemoryResponse {
+    private String pid;
+    private String address;
+    private boolean success;
 
-    public Segment(PageTable page_table, int page_index) {
-        this.page_table = page_table;
-        this.page_index = page_index;
+    public MemoryResponse(String pid, String address, boolean success) {
+        this.pid = pid;
+        if(!success && address != null){
+            throw new IllegalArgumentException("address must be null when success is false");
+        }
+        this.success = success;
+        this.address = address;
     }
 
-    public PageTable getPageTable() {
-        return page_table;
+    public String getAddress() {
+        if(!wasSuccessful()){
+           throw new NullPointerException("address is null when response not success");
+        }
+        return address;
     }
 
-    public int getPageIndex() {
-        return page_index;
+    public String getPid() {
+        return pid;
     }
+
+    public boolean wasSuccessful(){
+        return success;
+    }
+
 }

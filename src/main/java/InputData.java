@@ -18,26 +18,6 @@ import java.util.Queue;
  * Created by kylebolton on 12/3/16.
  */
 public class InputData {
-    private class ProcessData{
-        public String pid;
-        public int num_page_frames;
-        ProcessData(String pid, int num_page_frames){
-            this.pid = pid;
-            this.num_page_frames = num_page_frames;
-        }
-    };
-    private class MemoryRequest{
-        String pid;
-        int segment;
-        int page;
-        int offset;
-        MemoryRequest(String pid, int segment, int page, int offset){
-            this.pid = pid;
-            this.segment = segment;
-            this.page = page;
-            this.offset = offset;
-        }
-    };
     public int num_page_frames;
     public int max_segment_length;  // maximum segment length (in number of pages)
     public int page_size; // page size (in number of bytes)
@@ -56,8 +36,8 @@ public class InputData {
     public void addAddressSpace(String pid, int num_page_frames){
         address_spaces.add(new ProcessData(pid, num_page_frames));
     }
-    public void addMemoryRequest(String pid, int segment, int page, int offset){
-        memory_requests.add(new MemoryRequest(pid, segment, page, offset));
+    public void addMemoryRequest(String pid, String virtual_address, int segment, int page, int offset){
+        memory_requests.add(new MemoryRequest(pid, virtual_address, segment, page, offset));
     }
 
 }

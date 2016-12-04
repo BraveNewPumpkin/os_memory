@@ -9,20 +9,30 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-public class Segment {
-    private PageTable page_table;
-    private int page_index;
+/**
+ * Created by kylebolton on 12/3/16.
+ * builder pattern to abstract goofy constructor arguments for success and failure
+ */
+public class MemoryResponseBuilder {
+    private String pid;
+    private String address;
+    private boolean success;
 
-    public Segment(PageTable page_table, int page_index) {
-        this.page_table = page_table;
-        this.page_index = page_index;
+    public MemoryResponseBuilder success(String pid, String address){
+       this.pid = pid;
+       this.address = address;
+       this.success = true;
+       return this;
     }
 
-    public PageTable getPageTable() {
-        return page_table;
+    public MemoryResponseBuilder failure(String pid){
+        this.pid = pid;
+        this.address = null;
+        this.success = false;
+        return this;
     }
 
-    public int getPageIndex() {
-        return page_index;
+    public MemoryResponse build(){
+        return new MemoryResponse(pid, address, success);
     }
 }

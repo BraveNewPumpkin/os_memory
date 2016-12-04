@@ -10,15 +10,42 @@
  */
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class MainMemory {
     private int max_pages;
+    private int min_pages;
     private int used_pages;
-    private Map<String, Segment> segments;
-    public MainMemory(int max_pages, int min_pages, int max_pages_per_segment){
+    private Map<String, SegmentTable> segment_tables;
+    public MainMemory(
+            ExecutorService executor,
+            int max_pages,
+            int min_pages,
+            int max_pages_per_segment,
+            List<ProcessData> process_data_list,
+            ReplacementStrategy replacement_strategy){
         this.max_pages = max_pages;
-        this.used_pages = 0;
-        this.segments = new HashMap<>();
+        this.min_pages = min_pages;
+        used_pages = 0;
+        segment_tables = new HashMap<>();
+        for(ProcessData process_data: process_data_list){
+            SegmentTable segment_table = new SegmentTable(max_pages_per_segment);
+            segment_tables.put(process_data.getPid(), segment_table);
+        }
+    }
+
+    public MemoryResponse getData(MemoryRequest memory_request) throws MemoryNotFoundException {
+        MemoryResponse memory_response;
+        //TODO implement
+        memory_response = new MemoryResponseBuilder().success(memory_request.pid, memory_request.address).build();
+        return memory_response;
+    }
+
+    public void purgePid(String pid){
+        //TODO clear all used memory for given pid
     }
 }

@@ -9,20 +9,20 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-public class Segment {
-    private PageTable page_table;
-    private int page_index;
+import java.util.concurrent.Callable;
 
-    public Segment(PageTable page_table, int page_index) {
-        this.page_table = page_table;
-        this.page_index = page_index;
+/**
+ * Created by kylebolton on 12/3/16.
+ */
+public class Disk implements Callable<MemoryResponse>{
+    MemoryRequest memory_request;
+
+    public Disk(MemoryRequest memory_request) {
+        this.memory_request = memory_request;
     }
 
-    public PageTable getPageTable() {
-        return page_table;
-    }
-
-    public int getPageIndex() {
-        return page_index;
+    @Override
+    public MemoryResponse call() throws Exception {
+        return new MemoryResponse(memory_request.pid, memory_request.address);
     }
 }

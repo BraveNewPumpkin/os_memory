@@ -9,20 +9,24 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-public class Segment {
-    private PageTable page_table;
-    private int page_index;
+/**
+ * Created by kylebolton on 12/3/16.
+ */
+public class ProcessData {
+    private String pid;
+    private int num_page_frames;
 
-    public Segment(PageTable page_table, int page_index) {
-        this.page_table = page_table;
-        this.page_index = page_index;
+    ProcessData(String pid, int num_page_frames){
+        this.pid = pid;
+        this.num_page_frames = num_page_frames;
     }
 
-    public PageTable getPageTable() {
-        return page_table;
+    public String getPid() {
+        return pid;
     }
 
-    public int getPageIndex() {
-        return page_index;
+    public int getNumPageFrames() {
+        return num_page_frames;
     }
+
 }

@@ -10,5 +10,8 @@
  */
 
 public class PageTable {
-//TODO inherit from? vector of pages
+    public PageTable() {
+        System.out.println("constructing pagetable");
+    }
+    //TODO inherit from? vector of pages
 }
