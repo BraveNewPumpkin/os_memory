@@ -37,7 +37,10 @@ public class FifoReplacementStrategy extends ReplacementStrategy {
     @Override
     public List<MemoryRequest> update(MemoryRequest memory_request) {
         List<MemoryRequest> requests_to_delete = new ArrayList<>();
-        requests.get(memory_request.pid).add(memory_request);
+        Queue<MemoryRequest> requests_for_pid = requests.get(memory_request.pid);
+        if(!requests_for_pid.contains(memory_request)) {
+            requests.get(memory_request.pid).add(memory_request);
+        }
         if(requests.get(memory_request.pid).size() > max_page_frames_per_process) {
             requests_to_delete.add(requests.get(memory_request.pid).remove());
         }

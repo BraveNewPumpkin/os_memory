@@ -9,40 +9,52 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import sun.misc.LRUCache;
+
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 
 /**
  * Created by kylebolton on 12/4/16.
  */
 public class LruReplacementStrategy extends ReplacementStrategy{
-    private final
+    private final Map<String, Queue<MemoryRequest>> requests;
+    private final int max_page_frames_per_process;
+    private MemoryRequest most_recent_request;
 
     @Override
     protected MemoryRequest getMostRecentRequest() {
-        return null;
+        return most_recent_request;
     }
 
     public LruReplacementStrategy(String name, InputData input_data, MemoryManager memory_manager, ExecutorService executor) {
         super(name, input_data, memory_manager, executor);
+        max_page_frames_per_process = input_data.num_page_frames_per_process;
+        requests = new HashMap<>(input_data.address_spaces.size());
+        for(ProcessData process_data: input_data.address_spaces){
+            requests.put(process_data.getPid(), new ArrayDeque<MemoryRequest>(max_page_frames_per_process));
+        }
     }
 
     @Override
     public List<MemoryRequest> update(MemoryRequest memory_request) {
         List<MemoryRequest> requests_to_delete = new ArrayList<>();
-//        TODO implement
-//        requests.get(memory_request.pid).add(memory_request);
-//        requests_to_delete.add(requests.get(memory_request.pid).remove());
-//        most_recent_request = memory_request;
+        Queue<MemoryRequest> requests_for_pid = requests.get(memory_request.pid);
+        requests_for_pid.remove(memory_request); //remove from queue in case it was already there
+        requests_for_pid.add(memory_request); //insert at back of queue
+        if(requests_for_pid.size() > max_page_frames_per_process) {
+            requests_to_delete.add(requests_for_pid.remove());
+        }
+
+        most_recent_request = memory_request;
 
         return requests_to_delete;
     }
 
     @Override
     public void requestsRemoved(Set<MemoryRequest> removed_requests) {
-        //TODO implement
-
+        for(MemoryRequest request: removed_requests){
+            requests.get(request.pid).remove(request);
+        }
     }
 }
