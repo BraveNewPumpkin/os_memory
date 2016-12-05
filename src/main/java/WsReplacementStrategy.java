@@ -9,9 +9,28 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-public class PageTable {
-    public PageTable() {
-        System.out.println("constructing pagetable");
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+
+/**
+ * Created by kylebolton on 12/4/16.
+ */
+public class WsReplacementStrategy extends ReplacementStrategy{
+
+    public WsReplacementStrategy(String name, InputData input_data, MemoryManager.MainMemory main_memory, ExecutorService executor) {
+        super(name, input_data, main_memory, executor);
     }
-    //TODO inherit from? vector of pages
+
+    @Override
+    public List<MemoryRequest> update(MemoryRequest memory_request) {
+        //TODO implement
+        return null;
+    }
+
+    @Override
+    public void requestsRemoved(Set<MemoryRequest> removed_requests) {
+        //TODO implement
+
+    }
 }

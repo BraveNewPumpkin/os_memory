@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.*;
 
 import com.beust.jcommander.*;
@@ -53,58 +54,51 @@ public class Runner {
                 FileReader input_reader = new FileReader(input_file);
                 BufferedReader buffered_input_reader = new BufferedReader(input_reader);
         ) {
-            ReplacementStrategyFactory replacement_strategy_factory = new ReplacementStrategyFactory();
-            ReplacementStrategy replacement_strategy = replacement_strategy_factory.getStrategyObject(replacement_algorithm_name);
             InputParser input_parser = new InputParser();
-            InputData input_data = input_parser.parse(buffered_input_reader, replacement_strategy);
-            MainMemory main_memory = new MainMemory(
+            InputData input_data = input_parser.parse(buffered_input_reader);
+            MemoryManager memory_manager = new MemoryManager(
                     input_data.max,
                     input_data.min,
                     input_data.max_segment_length,
-                    input_data.address_spaces,
+                    input_data.address_spaces
             );
+            MemoryManager.MainMemory main_memory = memory_manager.getMainMemory();
+            ReplacementStrategyFactory replacement_strategy_factory = new ReplacementStrategyFactory(input_data, main_memory, executor);
+            ReplacementStrategy replacement_strategy = replacement_strategy_factory.getStrategyObject(replacement_algorithm_name);
             for(MemoryRequest memory_request: input_data.memory_requests) {
                 if(!memory_request.address.equals("-1")) {
-                    //this is for opt and ws type stratagies where they may remove addresses from main memory
+                    //this is for opt and ws type strategies where they may remove addresses from main memory
                     List<MemoryRequest> memory_to_delete = replacement_strategy.update(memory_request);
-                    main_memory.delete(memory_to_delete);
-                    MemoryResponse memory_response = main_memory.getData(memory_request);
+                    main_memory.removeAll(memory_to_delete);
+                    MemoryResponse memory_response = main_memory.get(memory_request);
                     if(!memory_response.wasSuccessful()) {
-                        //TODO somehow put the pid we're replacing an address for on hold. maybe make it reusable so
-                        // when main memory needs to put a pid on hold and dump it's memory because it's over max it can reuse
+                        memory_manager.deactivateProcess(memory_response.getPid());
+                        //create page fault handler thread
                         executor.execute(replacement_strategy);
                     }
                 }else{
-                    main_memory.purgePid(memory_request.pid);
-                    //TODO remove from replacement_strategy (does it store them by pid? if not then main_memory will need to do this)
-                    // if not by pid then working set window is across all pids?
+                    Set<MemoryRequest> deleted_memory = main_memory.removeAddressSpace(memory_request.pid);
+                    replacement_strategy.requestsRemoved(deleted_memory);
                 }
             }
             System.out.println("I've been run!");
         } catch (IOException e) {
             System.err.print(e.toString());
-        }catch (InterruptedException|ExecutionException e){
-            System.err.print(e.toString());
-//        } catch (UndefinedVariableException|InvalidDataException e){
+//        }catch (InterruptedException|ExecutionException e){
 //            System.err.print(e.toString());
         }finally {
             shutdownAndAwaitTermination(executor);
         }
-/*
- * create free frames pool
- * if coming close to min free frames then put a process (random pick) on hold and move it's frames out of memory
- *
- */
     }
 
     void shutdownAndAwaitTermination(ExecutorService pool) {
         pool.shutdown(); // Disable new tasks from being submitted
         try {
             // Wait a while for existing tasks to terminate
-            if (!pool.awaitTermination(60, TimeUnit.SECONDS)) {
+            if (!pool.awaitTermination(5, TimeUnit.SECONDS)) {
                 pool.shutdownNow(); // Cancel currently executing tasks
                 // Wait a while for tasks to respond to being cancelled
-                if (!pool.awaitTermination(60, TimeUnit.SECONDS))
+                if (!pool.awaitTermination(5, TimeUnit.SECONDS))
                     System.err.println("Pool did not terminate");
             }
         } catch (InterruptedException ie) {

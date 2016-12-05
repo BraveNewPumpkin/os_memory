@@ -1,4 +1,5 @@
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Created by kylebolton on 12/3/16.
@@ -10,24 +11,28 @@ public class ReplacementStrategyFactory {
 //        {"lfu", "least frequently used"},
 //        {"opt", "optimum MUST ALSO SET --lookahead"},
 //        {"ws", "Working Set"}
+    private InputData input_data;
+    private MemoryManager.MainMemory main_memory;
+    private ExecutorService executor;
+
+    public ReplacementStrategyFactory(InputData input_data, MemoryManager.MainMemory main_memory, ExecutorService executor) {
+        this.input_data = input_data;
+        this.main_memory = main_memory;
+        this.executor = executor;
+    }
 
     public ReplacementStrategy getStrategyObject(String name) {
         ReplacementStrategy replacement_strategy;
         if (name.equalsIgnoreCase("fifo")) {
-            replacement_strategy = new ReplacementStrategy(name);
-            //TODO construct and return fifo ReplacementStrategy object
+            replacement_strategy = new FifoReplacementStrategy(name, input_data, main_memory, executor);
         } else if (name.equalsIgnoreCase("lru")) {
-            replacement_strategy = new ReplacementStrategy(name);
-            //TODO construct and return lru ReplacementStrategy object
+            replacement_strategy = new LruReplacementStrategy(name, input_data, main_memory, executor);
         } else if (name.equalsIgnoreCase("lfu")) {
-            replacement_strategy = new ReplacementStrategy(name);
-            //TODO construct and return lfu ReplacementStrategy object
+            replacement_strategy = new LfuReplacementStrategy(name, input_data, main_memory, executor);
         } else if (name.equalsIgnoreCase("opt")) {
-            replacement_strategy = new ReplacementStrategy(name);
-            //TODO construct and return opt ReplacementStrategy object
+            replacement_strategy = new OptReplacementStrategy(name, input_data, main_memory, executor);
         } else if (name.equalsIgnoreCase("ws")) {
-            replacement_strategy = new ReplacementStrategy(name);
-            //TODO construct and return ws ReplacementStrategy object
+            replacement_strategy = new WsReplacementStrategy(name, input_data, main_memory, executor);
         } else {
             throw new IllegalArgumentException("invalid replacement algorithm name: \"" + name + '"');
         }

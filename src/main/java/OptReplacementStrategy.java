@@ -9,11 +9,28 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+
 /**
- * Created by kylebolton on 12/3/16.
+ * Created by kylebolton on 12/4/16.
  */
-public class MemoryNotFoundException extends Exception{
-    public MemoryNotFoundException(String message) {
-        super(message);
+public class OptReplacementStrategy extends ReplacementStrategy{
+
+    public OptReplacementStrategy(String name, InputData input_data, MemoryManager.MainMemory main_memory, ExecutorService executor) {
+        super(name, input_data, main_memory, executor);
+    }
+
+    @Override
+    public List<MemoryRequest> update(MemoryRequest memory_request) {
+        //TODO implement
+        return null;
+    }
+
+    @Override
+    public void requestsRemoved(Set<MemoryRequest> removed_requests) {
+        //TODO implement
+
     }
 }

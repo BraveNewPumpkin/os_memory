@@ -7,23 +7,14 @@ import static java.lang.Integer.parseInt;
  * Created by kylebolton on 12/3/16.
  */
 public class InputParser {
-    public InputData parse(BufferedReader input, ReplacementStrategy replacement_strategy) throws java.io.IOException{
+    public InputData parse(BufferedReader input) throws java.io.IOException{
         InputData input_data = new InputData();
         int num_processes;
         input_data.num_page_frames = parseInt(input.readLine());
         input_data.max_segment_length = parseInt(input.readLine());
         input_data.page_size = parseInt(input.readLine());
-        if(replacement_strategy.getName().equalsIgnoreCase("ws")) {
-            input_data.num_page_frames_per_process = parseInt(input.readLine());
-            if(replacement_strategy.getName().equalsIgnoreCase("OPT")) {
-                input_data.window_size = parseInt(input.readLine());
-            }else{
-                input.readLine(); //throw away line
-            }
-        }else{
-            input_data.window_size = parseInt(input.readLine());
-            input.readLine(); //throw away line
-        }
+        input_data.num_page_frames_per_process = parseInt(input.readLine());
+        input_data.window_size = parseInt(input.readLine());
         input_data.min = parseInt(input.readLine());
         input_data.max = parseInt(input.readLine());
         num_processes = parseInt(input.readLine());

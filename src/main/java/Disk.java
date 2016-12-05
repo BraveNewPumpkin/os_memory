@@ -22,7 +22,7 @@ public class Disk implements Callable<MemoryResponse>{
     }
 
     @Override
-    public MemoryResponse call() throws Exception {
-        return new MemoryResponse(memory_request.pid, memory_request.address);
+    public MemoryResponse call() {
+        return new MemoryResponseBuilder().success(memory_request.pid, memory_request.address).build();
     }
 }
