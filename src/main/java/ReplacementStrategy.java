@@ -8,17 +8,19 @@ import java.util.concurrent.Future;
  * Created by kylebolton on 12/3/16.
  */
 public abstract class ReplacementStrategy implements Runnable{
-    protected String name;
-    protected InputData input_data;
-    protected MemoryManager.MainMemory main_memory;
-    protected ExecutorService executor;
+    protected final String name;
+    protected final InputData input_data;
+    protected final MemoryManager memory_manager;
+    protected final MemoryManager.MainMemory main_memory;
+    protected final ExecutorService executor;
 
     protected abstract MemoryRequest getMostRecentRequest();
 
-    public ReplacementStrategy(String name, InputData input_data, MemoryManager.MainMemory main_memory, ExecutorService executor) {
+    public ReplacementStrategy(String name, InputData input_data, MemoryManager memory_manager, ExecutorService executor) {
         this.name = name;
         this.input_data = input_data;
-        this.main_memory = main_memory;
+        this.memory_manager = memory_manager;
+        this.main_memory = memory_manager.getMainMemory();
         this.executor = executor;
     }
 
@@ -46,11 +48,8 @@ public abstract class ReplacementStrategy implements Runnable{
             //this will wait until thread returns value
             if (future.get().wasSuccessful()) {
                 //put memory_request into main_memory
-                try {
                     main_memory.put(memory_request);
-                }catch (InterruptedException e){
-                    //unrecoverable failure... TODO
-                }
+                    memory_manager.activateProcess(memory_request.pid);
             }else{
                 //if we weren't faking disk access, this would probably notify the OS of disk error.
             }

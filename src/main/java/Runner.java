@@ -2,7 +2,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.*;
 
@@ -54,8 +56,12 @@ public class Runner {
                 FileReader input_reader = new FileReader(input_file);
                 BufferedReader buffered_input_reader = new BufferedReader(input_reader);
         ) {
+            Map<String, Integer> page_faults = new HashMap<>();
             InputParser input_parser = new InputParser();
             InputData input_data = input_parser.parse(buffered_input_reader);
+            for(ProcessData process_data: input_data.address_spaces){
+                page_faults.put(process_data.getPid(), 0);
+            }
             MemoryManager memory_manager = new MemoryManager(
                     input_data.max,
                     input_data.min,
@@ -63,7 +69,7 @@ public class Runner {
                     input_data.address_spaces
             );
             MemoryManager.MainMemory main_memory = memory_manager.getMainMemory();
-            ReplacementStrategyFactory replacement_strategy_factory = new ReplacementStrategyFactory(input_data, main_memory, executor);
+            ReplacementStrategyFactory replacement_strategy_factory = new ReplacementStrategyFactory(input_data, memory_manager, executor);
             ReplacementStrategy replacement_strategy = replacement_strategy_factory.getStrategyObject(replacement_algorithm_name);
             for(MemoryRequest memory_request: input_data.memory_requests) {
                 if(!memory_request.address.equals("-1")) {
@@ -72,6 +78,10 @@ public class Runner {
                     main_memory.removeAll(memory_to_delete);
                     MemoryResponse memory_response = main_memory.get(memory_request);
                     if(!memory_response.wasSuccessful()) {
+                        //page fault
+                        page_faults.put(memory_request.pid, page_faults.get(memory_request.pid) + 1);
+                        //deactivate on page fault so that further requests from this pid will get queued until
+                        // reactivated (after page fault handling is done)
                         memory_manager.deactivateProcess(memory_response.getPid());
                         //create page fault handler thread
                         executor.execute(replacement_strategy);
@@ -81,7 +91,14 @@ public class Runner {
                     replacement_strategy.requestsRemoved(deleted_memory);
                 }
             }
-            System.out.println("I've been run!");
+
+            System.out.println("page faults per pid:");
+            int total_page_faults = 0;
+            for(Map.Entry<String, Integer> entry: page_faults.entrySet()){
+                System.out.println("pid: " + entry.getKey() + " page faults: " + entry.getValue());
+                total_page_faults += entry.getValue();
+            }
+            System.out.println("total page faults: " + total_page_faults);
         } catch (IOException e) {
             System.err.print(e.toString());
 //        }catch (InterruptedException|ExecutionException e){

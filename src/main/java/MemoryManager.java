@@ -35,6 +35,11 @@ public class MemoryManager {
         deactivated_processes_address_spaces.put(pid, main_memory.removeAddressSpace(pid));
     }
 
+    public void activateProcess(String pid){
+        //TODO handle deactivated_processes_memory_requests
+        main_memory.addAddressSpace(pid, deactivated_processes_address_spaces.get(pid));
+    }
+
     public void activateProcess(int max_size){
         for(Map.Entry<String, Set<MemoryRequest>> entry: deactivated_processes_address_spaces.entrySet()){
             String pid = entry.getKey();

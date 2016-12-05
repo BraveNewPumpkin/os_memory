@@ -9,6 +9,7 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -17,14 +18,24 @@ import java.util.concurrent.ExecutorService;
  * Created by kylebolton on 12/4/16.
  */
 public class LfuReplacementStrategy extends ReplacementStrategy{
-    public LfuReplacementStrategy(String name, InputData input_data, MemoryManager.MainMemory main_memory, ExecutorService executor) {
-        super(name, input_data, main_memory, executor);
+    @Override
+    protected MemoryRequest getMostRecentRequest() {
+        return null;
+    }
+
+    public LfuReplacementStrategy(String name, InputData input_data, MemoryManager memory_manager, ExecutorService executor) {
+        super(name, input_data, memory_manager, executor);
     }
 
     @Override
     public List<MemoryRequest> update(MemoryRequest memory_request) {
-        //TODO implement
-        return null;
+        List<MemoryRequest> requests_to_delete = new ArrayList<>();
+//        TODO implement
+//        requests.get(memory_request.pid).add(memory_request);
+//        requests_to_delete.add(requests.get(memory_request.pid).remove());
+//        most_recent_request = memory_request;
+
+        return requests_to_delete;
     }
 
     @Override
