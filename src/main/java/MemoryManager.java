@@ -19,13 +19,16 @@ public class MemoryManager {
     private MainMemory main_memory;
     private Map<String, List<MemoryRequest>> deactivated_processes_memory_requests;
     private Map<String, Set<MemoryRequest>> deactivated_processes_address_spaces;
+    private final Queue<MemoryRequest> requests;
 
     public MemoryManager(
             int max_pages,
             int min_pages,
             int max_pages_per_segment,
-            List<ProcessData> process_data_list){
+            List<ProcessData> process_data_list,
+            Queue<MemoryRequest> requests){
         main_memory = new MainMemory(max_pages, min_pages, max_pages_per_segment, process_data_list);
+        this.requests = requests;
         deactivated_processes_memory_requests = new HashMap<>();
         deactivated_processes_address_spaces = new HashMap<>();
     }
@@ -36,7 +39,7 @@ public class MemoryManager {
     }
 
     public void activateProcess(String pid){
-        //TODO handle deactivated_processes_memory_requests
+        requests.addAll(deactivated_processes_memory_requests.remove(pid));
         main_memory.addAddressSpace(pid, deactivated_processes_address_spaces.get(pid));
     }
 
@@ -47,10 +50,14 @@ public class MemoryManager {
             if(address_space.size() <= max_size){
                 main_memory.addAddressSpace(pid, address_space);
                 deactivated_processes_address_spaces.remove(pid);
-                //TODO handle deactivated_processes_memory_requests
+                requests.addAll(deactivated_processes_memory_requests.remove(pid));
                 break;
             }
         }
+    }
+
+    public boolean isDeactivated(String pid){
+        return deactivated_processes_address_spaces.containsKey(pid);
     }
 
     public MainMemory getMainMemory() {
@@ -82,7 +89,7 @@ public class MemoryManager {
 
         public void put(MemoryRequest memory_request) throws InterruptedException{
             putProtection.acquire();
-            //if we will be over the desired max pages and we can do something about it (memory_manager has been set)
+            //if we will be over the desired max pages
             if(used_pages + 1 > max_pages){
                 //find suitable address space to deactivate
                 for(Map.Entry<String, Set<MemoryRequest>> entry: address_spaces.entrySet()){
@@ -92,6 +99,7 @@ public class MemoryManager {
                     }
                 }
             }
+            //TODO what if this request belongs to the process just deactivated?
             frames.add(memory_request);
             address_spaces.get(memory_request.pid).add(memory_request);
             putProtection.release();

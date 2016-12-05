@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutorService;
  * Created by kylebolton on 12/4/16.
  */
 public class LruReplacementStrategy extends ReplacementStrategy{
+    private final
 
     @Override
     protected MemoryRequest getMostRecentRequest() {

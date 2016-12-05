@@ -17,6 +17,7 @@ import java.util.concurrent.ExecutorService;
  */
 public class FifoReplacementStrategy extends ReplacementStrategy {
     private final Map<String, Queue<MemoryRequest>> requests;
+    private final int max_page_frames_per_process;
     private MemoryRequest most_recent_request;
 
     @Override
@@ -30,13 +31,16 @@ public class FifoReplacementStrategy extends ReplacementStrategy {
         for(ProcessData process_data: input_data.address_spaces){
             requests.put(process_data.getPid(), new ArrayDeque<MemoryRequest>(input_data.num_page_frames_per_process));
         }
+        this.max_page_frames_per_process = input_data.num_page_frames_per_process;
     }
 
     @Override
     public List<MemoryRequest> update(MemoryRequest memory_request) {
         List<MemoryRequest> requests_to_delete = new ArrayList<>();
         requests.get(memory_request.pid).add(memory_request);
-        requests_to_delete.add(requests.get(memory_request.pid).remove());
+        if(requests.get(memory_request.pid).size() > max_page_frames_per_process) {
+            requests_to_delete.add(requests.get(memory_request.pid).remove());
+        }
         most_recent_request = memory_request;
 
         return requests_to_delete;
