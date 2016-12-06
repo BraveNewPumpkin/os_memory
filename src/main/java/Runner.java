@@ -72,10 +72,9 @@ public class Runner {
             MemoryManager.MainMemory main_memory = memory_manager.getMainMemory();
             ReplacementStrategyFactory replacement_strategy_factory = new ReplacementStrategyFactory(input_data, memory_manager, executor);
             ReplacementStrategy replacement_strategy = replacement_strategy_factory.getStrategyObject(replacement_algorithm_name);
-            MemoryRequest memory_request;
-            while((memory_request = input_data.memory_requests.remove()) != null) {
-                //TODO need to check if it's for a deactivated pid and if so put it straight into deactivated queue and go to next
-                if(!memory_manager.isDeactivated(memory_request.pid)) {
+            while(!input_data.memory_requests.isEmpty()) {
+                MemoryRequest memory_request = input_data.memory_requests.remove();
+                if(memory_manager.shouldProcess(memory_request)) {
                     if (!memory_request.address.equals("-1")) {
                         //this is for opt and ws type strategies where they may remove addresses from main memory
                         List<MemoryRequest> memory_to_delete = replacement_strategy.update(memory_request);
@@ -86,17 +85,16 @@ public class Runner {
                             page_faults.put(memory_request.pid, page_faults.get(memory_request.pid) + 1);
                             //deactivate on page fault so that further requests from this pid will get queued until
                             // reactivated (after page fault handling is done)
-                            //TODO is current request put in deactivated req queue?
                             memory_manager.deactivateProcess(memory_response.getPid());
                             //create page fault handler thread
-                            executor.execute(replacement_strategy);
+                            //TODO switch back to async
+                            //executor.execute(replacement_strategy);
+                            replacement_strategy.run();
                         }
                     } else {
                         Set<MemoryRequest> deleted_memory = main_memory.removeAddressSpace(memory_request.pid);
                         replacement_strategy.requestsRemoved(deleted_memory);
                     }
-                }else{
-
                 }
             }
 

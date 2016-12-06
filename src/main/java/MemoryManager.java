@@ -40,7 +40,7 @@ public class MemoryManager {
 
     public void activateProcess(String pid){
         requests_queue.addAll(deactivated_processes_memory_requests.remove(pid));
-        main_memory.addAddressSpace(pid, deactivated_processes_address_spaces.get(pid));
+        main_memory.addAddressSpace(pid, deactivated_processes_address_spaces.remove(pid));
     }
 
     public void activateProcess(int max_size){
@@ -50,14 +50,22 @@ public class MemoryManager {
             if(address_space.size() <= max_size){
                 main_memory.addAddressSpace(pid, address_space);
                 deactivated_processes_address_spaces.remove(pid);
-                requests_queue.addAll(deactivated_processes_memory_requests.remove(pid));
+                List<MemoryRequest> memory_requests_to_restore_to_work_queue = deactivated_processes_memory_requests.remove(pid);
+                requests_queue.addAll(memory_requests_to_restore_to_work_queue);
                 break;
             }
         }
     }
 
-    public boolean isDeactivated(String pid){
-        return deactivated_processes_address_spaces.containsKey(pid);
+    public boolean shouldProcess(MemoryRequest unprocessed_request){
+        boolean should_process_request;
+        if(deactivated_processes_address_spaces.containsKey(unprocessed_request.pid)){
+            deactivated_processes_memory_requests.get(unprocessed_request.pid).add(unprocessed_request);
+            should_process_request = false;
+        }else{
+            should_process_request = true;
+        }
+        return should_process_request;
     }
 
     public MainMemory getMainMemory() {
@@ -99,9 +107,7 @@ public class MemoryManager {
                     }
                 }
             }
-            //TODO what if this request belongs to the process just deactivated?
-            frames.add(memory_request);
-            address_spaces.get(memory_request.pid).add(memory_request);
+            deactivated_processes_address_spaces.get(memory_request.pid).add(memory_request);
             putProtection.release();
         }
 
