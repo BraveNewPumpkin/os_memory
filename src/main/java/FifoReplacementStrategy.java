@@ -31,7 +31,7 @@ public class FifoReplacementStrategy extends ReplacementStrategy {
         for(ProcessData process_data: input_data.address_spaces){
             requests.put(process_data.getPid(), new ArrayDeque<MemoryRequest>(input_data.num_page_frames_per_process));
         }
-        this.max_page_frames_per_process = input_data.num_page_frames_per_process;
+        max_page_frames_per_process = input_data.num_page_frames_per_process;
     }
 
     @Override
@@ -39,10 +39,10 @@ public class FifoReplacementStrategy extends ReplacementStrategy {
         List<MemoryRequest> requests_to_delete = new ArrayList<>();
         Queue<MemoryRequest> requests_for_pid = requests.get(memory_request.pid);
         if(!requests_for_pid.contains(memory_request)) {
-            requests.get(memory_request.pid).add(memory_request);
+            requests_for_pid.add(memory_request);
         }
-        if(requests.get(memory_request.pid).size() > max_page_frames_per_process) {
-            requests_to_delete.add(requests.get(memory_request.pid).remove());
+        if(requests_for_pid.size() > max_page_frames_per_process) {
+            requests_to_delete.add(requests_for_pid.remove());
         }
         most_recent_request = memory_request;
 

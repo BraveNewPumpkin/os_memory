@@ -19,16 +19,16 @@ public class MemoryManager {
     private MainMemory main_memory;
     private Map<String, List<MemoryRequest>> deactivated_processes_memory_requests;
     private Map<String, Set<MemoryRequest>> deactivated_processes_address_spaces;
-    private final Queue<MemoryRequest> requests;
+    private final Queue<MemoryRequest> requests_queue;
 
     public MemoryManager(
             int max_pages,
             int min_pages,
             int max_pages_per_segment,
             List<ProcessData> process_data_list,
-            Queue<MemoryRequest> requests){
+            Queue<MemoryRequest> requests_queue){
         main_memory = new MainMemory(max_pages, min_pages, max_pages_per_segment, process_data_list);
-        this.requests = requests;
+        this.requests_queue = requests_queue;
         deactivated_processes_memory_requests = new HashMap<>();
         deactivated_processes_address_spaces = new HashMap<>();
     }
@@ -39,7 +39,7 @@ public class MemoryManager {
     }
 
     public void activateProcess(String pid){
-        requests.addAll(deactivated_processes_memory_requests.remove(pid));
+        requests_queue.addAll(deactivated_processes_memory_requests.remove(pid));
         main_memory.addAddressSpace(pid, deactivated_processes_address_spaces.get(pid));
     }
 
@@ -50,7 +50,7 @@ public class MemoryManager {
             if(address_space.size() <= max_size){
                 main_memory.addAddressSpace(pid, address_space);
                 deactivated_processes_address_spaces.remove(pid);
-                requests.addAll(deactivated_processes_memory_requests.remove(pid));
+                requests_queue.addAll(deactivated_processes_memory_requests.remove(pid));
                 break;
             }
         }
