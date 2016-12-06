@@ -25,8 +25,8 @@ public class OptReplacementStrategy extends ReplacementStrategy{
         return most_recent_request;
     }
 
-    public OptReplacementStrategy(String name, InputData input_data, MemoryManager memory_manager, ExecutorService executor) {
-        super(name, input_data, memory_manager, executor);
+    public OptReplacementStrategy(String name, InputData input_data, MemoryManager memory_manager) {
+        super(name, input_data, memory_manager);
         requests = new HashMap<>(input_data.address_spaces.size());
         for(ProcessData process_data: input_data.address_spaces){
             requests.put(process_data.getPid(), new ArrayList<MemoryRequest>(input_data.num_page_frames_per_process));

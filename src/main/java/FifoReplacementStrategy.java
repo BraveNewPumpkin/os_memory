@@ -10,7 +10,6 @@
  */
 
 import java.util.*;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Created by kylebolton on 12/4/16.
@@ -25,8 +24,8 @@ public class FifoReplacementStrategy extends ReplacementStrategy {
         return most_recent_request;
     }
 
-    public FifoReplacementStrategy(String name, InputData input_data, MemoryManager memory_manager, ExecutorService executor) {
-        super(name, input_data, memory_manager, executor);
+    public FifoReplacementStrategy(String name, InputData input_data, MemoryManager memory_manager) {
+        super(name, input_data, memory_manager);
         requests = new HashMap<>(input_data.address_spaces.size());
         for(ProcessData process_data: input_data.address_spaces){
             requests.put(process_data.getPid(), new ArrayDeque<MemoryRequest>(input_data.num_page_frames_per_process));
@@ -42,7 +41,7 @@ public class FifoReplacementStrategy extends ReplacementStrategy {
             requests_for_pid.add(memory_request);
         }
         if(requests_for_pid.size() > max_page_frames_per_process) {
-            requests_to_delete.add(requests_for_pid.remove());
+            requests_to_delete.add(requests.get(memory_request.pid).remove());
         }
         most_recent_request = memory_request;
 

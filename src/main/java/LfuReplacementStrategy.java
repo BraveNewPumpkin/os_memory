@@ -44,8 +44,8 @@ public class LfuReplacementStrategy extends ReplacementStrategy{
         return most_recent_request;
     }
 
-    public LfuReplacementStrategy(String name, InputData input_data, MemoryManager memory_manager, ExecutorService executor) {
-        super(name, input_data, memory_manager, executor);
+    public LfuReplacementStrategy(String name, InputData input_data, MemoryManager memory_manager) {
+        super(name, input_data, memory_manager);
         max_page_frames_per_process = input_data.num_page_frames_per_process;
         requests = new HashMap<>(input_data.address_spaces.size());
         request_frequency = new HashMap<>(input_data.address_spaces.size());

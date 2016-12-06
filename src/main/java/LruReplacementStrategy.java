@@ -10,7 +10,6 @@
  */
 
 import java.util.*;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Created by kylebolton on 12/4/16.
@@ -18,15 +17,14 @@ import java.util.concurrent.ExecutorService;
 public class LruReplacementStrategy extends ReplacementStrategy{
     private final Map<String, Queue<MemoryRequest>> requests;
     private final int max_page_frames_per_process;
-    private MemoryRequest most_recent_request;
 
     @Override
     protected MemoryRequest getMostRecentRequest() {
         return most_recent_request;
     }
 
-    public LruReplacementStrategy(String name, InputData input_data, MemoryManager memory_manager, ExecutorService executor) {
-        super(name, input_data, memory_manager, executor);
+    public LruReplacementStrategy(String name, InputData input_data, MemoryManager memory_manager) {
+        super(name, input_data, memory_manager);
         max_page_frames_per_process = input_data.num_page_frames_per_process;
         requests = new HashMap<>(input_data.address_spaces.size());
         for(ProcessData process_data: input_data.address_spaces){

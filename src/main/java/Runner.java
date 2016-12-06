@@ -70,7 +70,7 @@ public class Runner {
                     input_data.memory_requests
             );
             MemoryManager.MainMemory main_memory = memory_manager.getMainMemory();
-            ReplacementStrategyFactory replacement_strategy_factory = new ReplacementStrategyFactory(input_data, memory_manager, executor);
+            ReplacementStrategyFactory replacement_strategy_factory = new ReplacementStrategyFactory(input_data, memory_manager);
             ReplacementStrategy replacement_strategy = replacement_strategy_factory.getStrategyObject(replacement_algorithm_name);
             while(!input_data.memory_requests.isEmpty()) {
                 MemoryRequest memory_request = input_data.memory_requests.remove();
@@ -87,8 +87,8 @@ public class Runner {
                             // reactivated (after page fault handling is done)
                             memory_manager.deactivateProcess(memory_response.getPid());
                             //create page fault handler thread
-                            //TODO switch back to async
-                            //executor.execute(replacement_strategy);
+                            //NOTE: uncomment to make async, but there's bugs in my semaphores :(
+//                            executor.execute(replacement_strategy);
                             replacement_strategy.run();
                         }
                     } else {
@@ -107,8 +107,8 @@ public class Runner {
             System.out.println("total page faults: " + total_page_faults);
         } catch (IOException e) {
             System.err.print(e.toString());
-//        }catch (InterruptedException|ExecutionException e){
-//            System.err.print(e.toString());
+        }catch (InterruptedException e){
+            System.err.print(e.toString());
         }finally {
             shutdownAndAwaitTermination(executor);
         }
