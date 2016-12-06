@@ -9,6 +9,8 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import java.util.Objects;
+
 /**
  * Created by kylebolton on 12/3/16.
  */
@@ -24,5 +26,25 @@ public class MemoryRequest {
         this.segment = segment;
         this.page = page;
         this.offset = offset;
+    }
+
+    @Override
+    public boolean equals(Object object){
+        if (object == null) {
+            return false;
+        }
+        if (!MemoryRequest.class.isAssignableFrom(object.getClass())) {
+            return false;
+        }
+        final MemoryRequest other = (MemoryRequest) object;
+        if ((this.pid == null) ? (other.pid != null) : !this.pid.equals(other.pid)) {
+            return false;
+        }
+        return this.address.equals(other.address);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pid, address);
     }
 }
